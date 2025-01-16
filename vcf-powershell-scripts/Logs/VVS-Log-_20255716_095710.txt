@@ -1,0 +1,4 @@
+09:57:10 :> Offline Depot Access Configure
+09:57:10 :> Adding offline depot configuration function
+09:57:10 :> Requesting SDDC Manager Authentication Token
+09:57:16 :> Configuring access to the offline depot
