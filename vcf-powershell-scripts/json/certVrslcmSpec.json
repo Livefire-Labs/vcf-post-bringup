@@ -3,12 +3,12 @@
   "resources": [
     {
       "fqdn": "aria-lcm.vcf.sddc.lab",
-      "name": "aria-lcm.vcf.sddc.lab",
+      "type": "VRSLCM",
+      "resourceID": "542736ce-2527-40d3-9315-f27708945146",
       "sans": [
         "aria-lcm.vcf.sddc.lab"
       ],
-      "type": "VRSLCM",
-      "resourceID": "542736ce-2527-40d3-9315-f27708945146"
+      "name": "aria-lcm.vcf.sddc.lab"
     }
   ]
 }

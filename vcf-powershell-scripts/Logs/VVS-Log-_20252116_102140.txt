@@ -1,0 +1,2 @@
+10:21:40 :> Downloading and Deploying Aria Lifecycle
+10:21:40 :> Setting Variables for SDDC Manager

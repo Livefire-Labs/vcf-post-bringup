@@ -110,7 +110,7 @@ if ($ariaLCMBundle | Where-Object {$_.downloadstatus -eq "successful"}) {
 # Create the JSON Specification for Aria Deployment
 Logger "Creating JSON Specification"
 Write-Host "Creating JSON Specification File"
-$ariaLCMDepSpec = [PSCustomObject]@{apiPassword= @ariaLCMPassword;fqdn= $ariaLCMFqdn;nsxtStandaloneTier1Ip= $standAloneLB;sshPassword= $ariaLCMPassword}
+$ariaLCMDepSpec = [PSCustomObject]@{apiPassword= "VMware123!";fqdn= $ariaLCMFqdn;nsxtStandaloneTier1Ip= $standAloneLB;sshPassword= $ariaLCMPassword}
 $ariaLCMDepSpec | ConvertTo-Json -Depth 10 | Out-File -Filepath $jsonPathDir\ariaLCMDepSpec.json
 logger "JSOn Creation Complete"
 

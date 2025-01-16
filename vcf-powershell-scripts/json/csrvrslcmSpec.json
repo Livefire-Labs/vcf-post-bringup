@@ -1,5 +1,14 @@
 {
-  "operationType": "INSTALL",
+  "csrGenerationSpec": {
+    "keySize": "2048",
+    "organization": "Holo",
+    "locality": "Champaign",
+    "state": "Illinois",
+    "email": "admin@vcf.holo.org",
+    "organizationUnit": "IT",
+    "keyAlgorithm": "RSA",
+    "country": "us"
+  },
   "resources": [
     {
       "fqdn": "aria-lcm.vcf.sddc.lab",
