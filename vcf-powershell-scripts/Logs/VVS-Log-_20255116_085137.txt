@@ -1,0 +1,8 @@
+08:51:37 :> Downloading and Deploying Aria Lifecycle
+08:51:37 :> Setting Variables for SDDC Manager
+08:51:47 :> Bundle already downloaded, skipping download...
+08:52:17 :> Creating JSON Specification
+08:52:17 :> JSOn Creation Complete
+08:52:17 :> Validating JSON Settings
+08:52:39 :> Validation Complete
+08:52:39 :> Deploying Aria Lifecycle

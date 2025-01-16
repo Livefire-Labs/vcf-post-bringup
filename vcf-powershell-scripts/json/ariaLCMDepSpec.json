@@ -1,0 +1,6 @@
+{
+  "apiPassword": "VMware123!",
+  "fqdn": "aria-lcm.vcf.sddc.lab",
+  "nsxtStandaloneTier1Ip": "10.60.0.250",
+  "sshPassword": "VMware123!"
+}

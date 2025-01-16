@@ -3,7 +3,7 @@
 #                                                                                    
 #      You must have PowerVCF and PowerCLI installed in order to use this script     
 #                                                                                    
-#                   Words By Ben Sier, Music By Alasdair Carnie                      
+#                       Words & Music By Alasdair Carnie                     
 # ====================================================================================
 
 # Variables for the execution log file and json file directories.
@@ -30,6 +30,8 @@ Function logger($strMessage, [switch]$logOnly,[switch]$consoleOnly)
 
 logger "Downloading and Deploying Aria Lifecycle"
 
+Start-Process powershell -Argumentlist "`$host.UI.RawUI.WindowTitle = 'VLC Logging window';Get-Content '$logfile' -wait"
+
 # Variables Details could be pulled from the PnP Workbook
 logger "Setting Variables for SDDC Manager"
 $sddcManagerfqdn = "sddc-manager.vcf.sddc.lab"
@@ -40,19 +42,24 @@ $sddcMgrVMName = $sddcManagerfqdn.Split('.')[0] # If maintaining static values w
 $sddcUser = "root"
 $sddcPassword = "VMware123!VMware123!"
 
-$ariaLCFqdn = "aria-"
+# Aria Lifecycle Variables
+$ariaLCMFqdn = "aria-lcm.vcf.sddc.lab"
+$standAloneLB = "10.60.0.250"
+$ariaLCMPassword = "VMware123!"
+
+Request-VCFToken -username $ssoUser -password $ssoPass -fqdn $sddcManagerfqdn
 
 # Get the Aria Lifecycle Bundle from the depot.  Give that it can take a cfew cycles for SDDC Manager to pull the full list of available bundles
 # and that it does not pull the bundle list in any logical order, I created a loop to keep checking until the bundle is available, before continuing
 $maxWaitTimeMinutes = 10
 $retryIntervalSeconds = 60
-$matchedBundles = $null
+$ariaLCMBundle = $null
 $startTime = Get-Date
 
 # Loop to keep checking for matched bundles
-while ($matchedBundles -eq $null) {
+while ($ariaLCMBundle -eq $null) {
     # Get the bundles that match the requirements
-    $matchedBundles = Get-VCFBundle | Where-Object {
+    $ariaLCMBundle = Get-VCFBundle | Where-Object {
         $bundle = $_
         $bundle.components | Where-Object { 
             ($_.toVersion -match "8.18") -and ($_.description -match "vRSLCM Bundle")
@@ -62,8 +69,8 @@ while ($matchedBundles -eq $null) {
     }
 
     # Check if any matched bundles were found
-    if ($matchedBundles -eq $null) {
-        Write-Host "No matched bundles found. Retrying in $retryIntervalSeconds seconds..."
+    if ($ariaLCMBundle -eq $null) {
+        Write-Host "No matched Aria bundle found. Retrying in $retryIntervalSeconds seconds..."
         Start-Sleep -Seconds $retryIntervalSeconds
         
         # Check if we've exceeded the maximum wait time
@@ -73,80 +80,104 @@ while ($matchedBundles -eq $null) {
             exit 1  # Exit the script with a status code of 1
         }
     } else {
-        Write-Host "Matched bundles found."
+        Write-Host "Matched Aria bundle found."
     }
 }
 
-# Proceed with the rest of the script using $matchedBundles
-$matchedBundles
+# Proceed with the rest of the script using $ariaLCMBundle
+$ariaLCMBundle
 
-# Download the vRealize Suite Lifecycle Manager Bundle and monitor the task until comleted
-$requestBundle = Request-VCFBundle -id $vrslcmBundle.id
-Sleep 5
-do {$taskStatus = Get-VCFTask -id $($requestBundle.id)| Select status;sleep 5} until ($taskStatus -match "Successful")
-Write-Host "vRealize Suite Lifecycle Manager Download Complete"
+Sleep 10
 
-# Create the JSON Specification for vRealize Suite Lifecyclec Manager Deployment
+if ($ariaLCMBundle | Where-Object {$_.downloadstatus -eq "successful"}) {
+    Write-Host "Aria Lifecycle Bundle has already been downloaded. Skipping download..."
+    # Continue with the rest of the script
+    # Download the Aria Lifecycle Bundle, and monitor the task until completed
+    logger "Bundle already downloaded, skipping download..."
+    # Continue with the rest of the script
+} else {
+    Write-Host "Aria Lifecycle Bundle has not been downloaded yet. Downloading..."
+    # Download the Aria Lifecycle Bundle, and monitor the task until completed
+    logger "Requesting Aria Lifecycle Bundle"
+    $requestBundle = Request-VCFBundle -id $ariaLCMBundle.id
+    Sleep 5
+    do {$taskStatus = Get-VCFTask -id $($requestBundle.id)| Select status;sleep 5} until ($taskStatus -match "Successful")
+    sleep 30
+    Write-Host "Aria Suite Lifecycle Download Complete"
+    logger "Bundle Download Complete"
+}
+
+# Create the JSON Specification for Aria Deployment
+Logger "Creating JSON Specification"
 Write-Host "Creating JSON Specification File"
-$vrslcmDepSpec = [PSCustomObject]@{apiPassword= 'VMware123!';fqdn= $ariaLCFqdn;nsxtStandaloneTier1Ip= '10.60.0.250';sshPassword= 'VMware123!'}
-$vrslcmDepSpec | ConvertTo-Json -Depth 10 | Out-File -Filepath .\vrslcmDepSpec.json
+$ariaLCMDepSpec = [PSCustomObject]@{apiPassword= 'VMware123!';fqdn= $ariaLCMFqdn;nsxtStandaloneTier1Ip= $standAloneLB;sshPassword= $ariaLCMPassword}
+$ariaLCMDepSpec | ConvertTo-Json -Depth 10 | Out-File -Filepath $jsonPathDir\ariaLCMDepSpec.json
+logger "JSOn Creation Complete"
 
-# Validate the settings
+# Validating the settings
+logger "Validating JSON Settings"
 Write-Host "Validating JSON Settings"
-$vrslcmValidate = New-VCFvRSLCM -json .\vrslcmDepSpec.json -validate
+$ariaLCMValidate = New-VCFvRSLCM -json $jsonPathDir\ariaLCMDepSpec.json -validate
+
 Sleep 5
-do {$taskStatus = Get-VCFTask -id $($vrslcmValidate.id)| Select status;sleep 5} until ($taskStatus -match "Successful")
+
+do {$taskStatus = Get-VCFTask -id $($ariaLCMValidate.id)| Select status;sleep 5} until ($taskStatus -match "Successful")
 Write-Host "Validation Complete"
+logger "Validation Complete"
 
-# Deploy vRealize Suite Lifecycle Manager
-$vrslcmDeploy = New-VCFvRSLCM -json .\vrslcmDepSpec.json
-Write-Host "Deploying vRealize Suite Lifecycle Manager"
+# Deploy Aria Lifecycle
+logger "Deploying Aria Lifecycle"
+$ariaLCMDeploy = New-VCFvRSLCM -json $jsonPathDir\ariaLCMDepSpec.json
+Write-Host "Deploying Aria Lifecycle"
 sleep 5
-do {$taskStatus = Get-VCFTask -id $($vrslcmDeploy.id)| Select status;sleep 5} until ($taskStatus -match "Successful")
+do {$taskStatus = Get-VCFTask -id $($ariaLCMDeploy.id)| Select status;sleep 5} until ($taskStatus -match "Successful")
 Write-Host "Deployment Completed Successfully"
+logger "Aria Lifecycle deployment complete"
 
-# ==================== Create and deploy Certificate for vRSLCM ====================
-
+# ==================== Create and deploy Certificate for Aria Lifecycle ====================
+logger "Creating certificate request for Aria Lifecycle"
 $domainName = Get-VCFWorkloadDomain | Where-Object {$_.type -match "MANAGEMENT"} |Select -ExpandProperty name
 $vrslcm = Get-VCFvRSLCM
 $vrslcm | Add-Member -Type NoteProperty -Name Type -Value "VRSLCM"
 
-# Create JSON Specification for vRSLCM Certificate Signing Request
-Write-Host "Creating JSON Specification for vRSLCM Certificate Signing Request"
+# Create JSON Specification for Aria Lifecycle Certificate Signing Request
+Write-Host "Creating JSON Specification for Aria Lifecycle Certificate Signing Request"
 $csrVrslcm = [PSCustomObject]@{
-    csrGenerationSpec = @{country= 'us';email= 'admin@elasticsky.org';keyAlgorithm= 'RSA';keySize= '2048';locality= 'Champaign';organization= 'Elasticsky';organizationUnit='IT';state= 'Illinois'}
+    csrGenerationSpec = @{country= 'us';email= 'admin@vcf.holo.org';keyAlgorithm= 'RSA';keySize= '2048';locality= 'Champaign';organization= 'Holo';organizationUnit='IT';state= 'Illinois'}
     resources = @(@{fqdn=$vrslcm.fqdn;name=$vrslcm.fqdn;sans=@($vrslcm.fqdn);resourceID=$vrslcm.id;type=$vrslcm.Type})
 }
+logger "Requesting Aria Lifecycle Certificate"
+# Create the JSON file for Aria Lifecycle CSR Generation
+$csrVrslcm | ConvertTo-Json -Depth 10 | Out-File -Filepath $jsonPathDir\csrcrslcmSpec.json
 
-# Create the JSON file for vRSLCM CSR Generation
-$csrVrslcm | ConvertTo-Json -Depth 10 | Out-File -Filepath .\csrcrslcmSpec.json
-
-# Generate CSR for vRSLCM Certificate
+# Generate CSR for Aria Lifecycle Certificate
 Write-Host "Requesting vRSLCM CSR for $domainName"
-$csrVrslcmReq = Request-VCFCertificateCSR -domainName $domainName -json .\csrsvrslcmSpec.json
+$csrVrslcmReq = Request-VCFCertificateCSR -domainName $domainName -json $jsonPathDir\csrsvrslcmSpec.json
 do {$taskStatus = Get-VCFTask -id $($csrVrslcmReq.id) | Select status;sleep 5} until ($taskStatus -match "Successful")
 
-# Create JSON Specification for vRSLCM Certificate Generation
+# Create JSON Specification for Aria Lifecycle Certificate Generation
 Write-Host "Creating JSON specification for vRSLCM Certificate Request"
 $certVrslcmSpec = [PSCustomObject]@{
     caType = "Microsoft"
     resources = @(@{fqdn=$vrslcm.fqdn;name=$vrslcm.fqdn;sans=@($vrslcm.fqdn);resourceID=$vrslcm.id;type=$vrslcm.type})
 }
 
-# Request the creation of certificate for vRSLCM
-$certvrslcmSpec | ConvertTo-Json -Depth 10 | Out-File -Filepath .\certVrslcmSpec.json
+# Request the creation of certificate for Aria Lifecycle
+logger "Creating Certificate"
+$certvrslcmSpec | ConvertTo-Json -Depth 10 | Out-File -Filepath $jsonPathDir\certVrslcmSpec.json
 
-Write-Host "Generating vRSLCM Certificate on CA for $domainName"
+Write-Host "Generating Aria Lifecycle Certificate on CA for $domainName"
 $certVrslcmCreateReq = Request-VCFCertificate -domainName $domainName -json .\certVrslcmSpec.json
 do {$taskStatus = Get-VCFTask -id $($certVrslcmCreateReq.id) | Select status;sleep 5} until ($taskStatus -match "Successful")
 
-# Install certificate on vRSLCM
+# Install certificate on Aria Lifecycle
+logger "Installing Aria Lifecycle Certificate"
 $certVrslcmInstallSpec = [PSCustomObject]@{
     operationType = "INSTALL"
     resources = @(@{fqdn=$vrslcm.fqdn;name=$vrslcm.fqdn;sans=@($vrslcm.fqdn);resourceID=$vrslcm.id;type=$vrslcm.type})
 }
 
-$certVrslcmInstallSpec | ConvertTo-Json -Depth 10 | Out-File -Filepath .\certVrslcmInstallSpec.json
+$certVrslcmInstallSpec | ConvertTo-Json -Depth 10 | Out-File -Filepath $jsonPathDir\certVrslcmInstallSpec.json
 Write-Host "Installing Certificates for $domainName"
-$certVrslcmInstallReq = Set-VCFCertificate -domainName $domainName -json .\certVrslcmInstallSpec.json
+$certVrslcmInstallReq = Set-VCFCertificate -domainName $domainName -json $jsonPathDir\certVrslcmInstallSpec.json
 do {$taskStatus = Get-VCFTask -id $($certVrslcmInstallReq.id) | Select status;sleep 5} until ($taskStatus -match "Successful")
