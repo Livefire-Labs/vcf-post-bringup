@@ -1,0 +1,2 @@
+06:07:08 :> Downloading and Configuring Aria Lifecycle
+06:07:08 :> Requesting SDDC Manager Authentication Token

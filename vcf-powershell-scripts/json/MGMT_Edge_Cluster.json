@@ -1,0 +1,71 @@
+{
+  "asn": "65003",
+  "edgeAdminPassword": "VMware123!VMware123!",
+  "edgeAuditPassword": "VMware123!VMware123!",
+  "edgeRootPassword": "VMware123!VMware123!",
+  "mtu": 8000,
+  "tier0Name": "VLC-Tier-0",
+  "tier0RoutingType": "EBGP",
+  "tier0ServicesHighAvailability": "ACTIVE_ACTIVE",
+  "tier1Name": "VLC-Tier-1",
+  "edgeClusterName": "EC-01",
+  "edgeClusterProfileType": "DEFAULT",
+  "edgeClusterType": "NSX-T",
+  "edgeFormFactor": "LARGE",
+  "edgeNodeSpecs": [
+    {
+      "edgeTep2IP": "10.0.17.3/24",
+      "managementGateway": "10.0.11.253",
+      "edgeNodeName": "edge1-mgmt.vcf.sddc.lab",
+      "uplinkNetwork": [
+        {
+          "uplinkVlan": "15",
+          "asnPeer": "65001",
+          "bgpPeerPassword": "VMware123!VMware123!",
+          "uplinkInterfaceIP": "10.0.15.2/24",
+          "peerIP": "10.0.15.1/24"
+        },
+        {
+          "uplinkVlan": "16",
+          "asnPeer": "65001",
+          "bgpPeerPassword": "VMware123!VMware123!",
+          "uplinkInterfaceIP": "10.0.16.2/24",
+          "peerIP": "10.0.16.1/24"
+        }
+      ],
+      "clusterId": "053a13c1-e19f-4ecf-a45d-13aab389d34e",
+      "edgeTepGateway": "10.0.17.253",
+      "edgeTepVlan": "17",
+      "interRackCluster": false,
+      "managementIP": "10.0.11.23/24",
+      "edgeTep1IP": "10.0.17.2/24"
+    },
+    {
+      "edgeTep2IP": "10.0.17.5/24",
+      "managementGateway": "10.0.11.253",
+      "edgeNodeName": "edge2-mgmt.vcf.sddc.lab",
+      "uplinkNetwork": [
+        {
+          "uplinkVlan": "15",
+          "asnPeer": "65001",
+          "bgpPeerPassword": "VMware123!VMware123!",
+          "uplinkInterfaceIP": "10.0.15.3/24",
+          "peerIP": "10.0.15.1/24"
+        },
+        {
+          "uplinkVlan": "16",
+          "asnPeer": "65001",
+          "bgpPeerPassword": "VMware123!VMware123!",
+          "uplinkInterfaceIP": "10.0.16.3/24",
+          "peerIP": "10.0.16.1/24"
+        }
+      ],
+      "clusterId": "053a13c1-e19f-4ecf-a45d-13aab389d34e",
+      "edgeTepGateway": "10.0.17.253",
+      "edgeTepVlan": "17",
+      "interRackCluster": false,
+      "managementIP": "10.0.11.24/24",
+      "edgeTep1IP": "10.0.17.4/24"
+    }
+  ]
+}

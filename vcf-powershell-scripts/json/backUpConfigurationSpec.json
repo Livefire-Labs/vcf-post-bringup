@@ -1,0 +1,23 @@
+{
+  "backupLocations": [
+    {
+      "protocol": "SFTP",
+      "sshFingerprint": "SHA256:hi8SOP5Ywb4QBKe4YgoxNorqmo0f4mBWkaommOskKJg",
+      "password": "VMware123!VMware123!",
+      "port": "22",
+      "username": "admin",
+      "directoryPath": "/home/admin",
+      "server": "10.0.0.253"
+    }
+  ],
+  "backupSchedules": [
+    {
+      "frequency": "HOURLY",
+      "resourceType": "SDDC_MANAGER",
+      "minuteOfHour": "0"
+    }
+  ],
+  "encryption": {
+    "passphrase": "VMware123!VMware123!"
+  }
+}

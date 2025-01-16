@@ -1,0 +1,10 @@
+03:18:53 :> Deploying AVN Configuration
+03:18:53 :> Creating SDDC Manager variables
+03:18:53 :> Authenticating with SDDC Manager
+03:18:58 :> Getting Edge Cluster ID
+03:18:59 :> Injesting AVN Variables
+03:18:59 :> Creating AVN Configuration JSON file
+03:18:59 :> Saving configurartion to JSON file
+03:18:59 :> Validating AVN configuration
+03:18:59 :> Configuring the Edge Cluster with AVN Segments
+03:19:55 :> AVN Configuration deployed successfully

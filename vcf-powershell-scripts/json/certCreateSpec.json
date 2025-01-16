@@ -1,0 +1,33 @@
+{
+  "caType": "Microsoft",
+  "resources": [
+    {
+      "sans": [
+        "vcenter-mgmt.vcf.sddc.lab"
+      ],
+      "resourceID": "9b95ae62-87e4-4e58-9b43-17c6b529530f",
+      "type": "VCENTER",
+      "name": "vcenter-mgmt.vcf.sddc.lab",
+      "fqdn": "vcenter-mgmt.vcf.sddc.lab"
+    },
+    {
+      "sans": [
+        "10.0.11.20",
+        "nsx-mgmt.vcf.sddc.lab"
+      ],
+      "resourceID": "649a805d-ca3f-40e0-bf3e-bb30291689f3",
+      "type": "NSXT_MANAGER",
+      "name": "nsx-mgmt.vcf.sddc.lab",
+      "fqdn": "nsx-mgmt.vcf.sddc.lab"
+    },
+    {
+      "sans": [
+        "sddc-manager.vcf.sddc.lab"
+      ],
+      "resourceID": "80e7460b-edd4-4a48-8928-b039c9e7f4b3",
+      "type": "SDDC_MANAGER",
+      "name": "sddc-manager.vcf.sddc.lab",
+      "fqdn": "sddc-manager.vcf.sddc.lab"
+    }
+  ]
+}

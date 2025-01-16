@@ -153,15 +153,15 @@ if (Test-VCFConnection -server $sddcManagerfqdn) {
         $backupPassphrase = "VMware123!VMware123!"
 
         if ((Get-VCFBackupConfiguration | Select-Object server).server -ne $backupServer) { 
-            $getKeyCommand = "ssh-keygen -lf <(ssh-keyscan $backupServer 2>/dev/null) | grep '2048 SHA256'"
+            $getKeyCommand = "ssh-keygen -lf <(ssh-keyscan -t rsa $backupServer 2>/dev/null) | cut -d ' ' -f 2"
             $keyCommandResult = Invoke-VMScript -ScriptType bash -GuestUser $sddcUser -GuestPassword $sddcPassword -VM $sddcMgrVMName -ScriptText $getKeyCommand -ErrorVariable ErrMsg
-            $backupKey = $($keyCommandResult.Split()[1])
+            $backupKey = $keyCommandResult.ScriptOutput.Trim()
 
             # Creating Backup Config JSON file
             logger "Create Backup Configuration JSON Specification"
             $backUpConfigurationSpec = [PSCustomObject]@{
                 backupLocations = @(@{server = $backupServer; username = $backupUser; password = $backupPassword; port = $backupPort; protocol = $backupProtocol; directoryPath = $backupPath; sshFingerprint = $backupKey })
-                backupSchedules = @(@{frequency = 'HOURLY'; resourceType = 'SDDC_MANAGER'; minuteOfHour = '0' })
+                backupSchedules = @(@{frequency = 'WEEKLY'; resourceType = 'SDDC_MANAGER'; minuteOfHour = '0' })
                 encryption      = @{passphrase = $backupPassphrase }
             }
             logger "Creating Backup Configuration JSON file"
@@ -215,6 +215,10 @@ if (Test-VCFConnection -server $sddcManagerfqdn) {
         #     logger "Depot Credentials Already Configured"
         # }
 
+
+
+
+        
        Disconnect-VIServer * -Confirm:$false -WarningAction SilentlyContinue | Out-Null
     }
 }
