@@ -110,7 +110,7 @@ if ($ariaLCMBundle | Where-Object {$_.downloadstatus -eq "successful"}) {
 # Create the JSON Specification for Aria Deployment
 Logger "Creating JSON Specification"
 Write-Host "Creating JSON Specification File"
-$ariaLCMDepSpec = [PSCustomObject]@{apiPassword= 'VMware123!';fqdn= $ariaLCMFqdn;nsxtStandaloneTier1Ip= $standAloneLB;sshPassword= $ariaLCMPassword}
+$ariaLCMDepSpec = [PSCustomObject]@{apiPassword= @ariaLCMPassword;fqdn= $ariaLCMFqdn;nsxtStandaloneTier1Ip= $standAloneLB;sshPassword= $ariaLCMPassword}
 $ariaLCMDepSpec | ConvertTo-Json -Depth 10 | Out-File -Filepath $jsonPathDir\ariaLCMDepSpec.json
 logger "JSOn Creation Complete"
 
@@ -148,7 +148,7 @@ $csrVrslcm = [PSCustomObject]@{
 }
 logger "Requesting Aria Lifecycle Certificate"
 # Create the JSON file for Aria Lifecycle CSR Generation
-$csrVrslcm | ConvertTo-Json -Depth 10 | Out-File -Filepath $jsonPathDir\csrcrslcmSpec.json
+$csrVrslcm | ConvertTo-Json -Depth 10 | Out-File -Filepath $jsonPathDir\csrvrslcmSpec.json
 
 # Generate CSR for Aria Lifecycle Certificate
 Write-Host "Requesting vRSLCM CSR for $domainName"
