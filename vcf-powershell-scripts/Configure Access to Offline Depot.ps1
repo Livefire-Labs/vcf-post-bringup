@@ -98,4 +98,4 @@ Start-Sleep 5
 logger "Configuring access to the offline depot"
 # Configure Offline Depot Access
 $response = Configure-OfflineDepot -sddcMgrFqdn $sddcMgrFQDN -Username $username -Password $password -Hostname $hostname
-do { $taskStatus = Get-VCFTask -id $($response.id) | Select-Object status; Start-Sleep 5 } until ($taskStatus -match "Successful")
+$responce
