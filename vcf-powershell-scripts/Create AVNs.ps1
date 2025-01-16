@@ -1,3 +1,14 @@
+#################################################################################################
+#                                                                                                 
+#                         Configure Application Virtual Networks (AVNs)                               
+#
+#                         You must have PowerVCF and PowerCLI Installed
+#
+#                         Words and Music By Alasdair Carnie & Ben Sier                         
+#                                                                                               
+#################################################################################################
+
+
 # Variables for the execution log file and json file directories.
 $scriptDir = Split-Path $MyInvocation.MyCommand.Path # Log file diretories will be created in the folder you exeute the script from
 $logPathDir = New-Item -ItemType Directory -Path "$scriptDir\Logs" -Force

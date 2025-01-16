@@ -1,9 +1,11 @@
 #################################################################################################
-#                                                                                               #  
-#                               Configure access to offline depot                               #
-#                                                                                               #
-#                         Words and Music By Alasdair Carnie & Ben Sier                         #
-#                                                                                               #
+#                                                                                                 
+#                               Configure access to offline depot                               
+#
+#                         You must have PowerVCF and PowerCLI Installed
+#
+#                         Words and Music By Alasdair Carnie & Ben Sier                         
+#                                                                                               
 #################################################################################################
 
 # Variables for the execution log file and json file directories.

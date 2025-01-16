@@ -3,7 +3,7 @@
 #                                                                                    
 #      You must have PowerVCF and PowerCLI installed in order to use this script     
 #                                                                                    
-#                   Words and Music By Ben Sier and Alasdair Carnie                      
+#                   Words and Music By Alasdair Carnie & Ben Sier                      
 # ====================================================================================
 
 # Variables for the execution log file and json file directories.
@@ -174,50 +174,6 @@ if (Test-VCFConnection -server $sddcManagerfqdn) {
         } else {
             logger "Reconfiguration of Backup Already Performed"
         }
-
-        # ==================== Configure Repository ====================
-
-        # # Variables for configuring the SDDC Manager Depot
-        # logger "Setting Variables for Configuring SDDC Manager Depot"
-        # $depotUser = "vcf-labs@livefire.solutions"
-        # $depotPassword = "VRQDK2BWdvZVsF!D"
-
-        # # NOTE:  The changes to the base images and poll interval are for demonstration purposes, and should only be changed after you have consulted with your customer regarding upgrades to any existing VCF deployments
-        # logger "Creating Script to Modify Default LCM Settings for Base Bundle and Polling Interval"
-        # $lcmChangeScript += "sed -i 's/lcm.core.manifest.poll.interval=300000/lcm.core.manifest.poll.interval=120000/g' /opt/vmware/vcf/lcm/lcm-app/conf/application-prod.properties`n"
-        # $lcmChangeScript += "sed -i 's/vrslcm.install.base.version=8.8.2-20080494/vrslcm.install.base.version=8.10.0-21331275/g' /opt/vmware/vcf/lcm/lcm-app/conf/application-prod.properties`n"
-        # $lcmChangeScript += "systemctl restart lcm`n"
-        # logger "Writing Changes to SDDC Manager Lifecycle Manager and Restarting LCM Service"
-        # Invoke-VMScript -ScriptType bash -GuestUser $sddcUser -GuestPassword $sddcPassword -VM $sddcMgrVMName -ScriptText $lcmChangeScript -ErrorVariable ErrMsg | Out-Null
-        # $pollLoopCounter = 0
-        # Do {
-        #     if ($pollLoopCounter % 10 -eq 0) {
-        #         logger "Waiting for the LCM Service to Restart"
-        #     }
-        #     $scriptCommand = 'curl http://localhost/lcm/about'
-        #     $output = Invoke-VMScript -VM $sddcMgrVMName -ScriptText $scriptCommand -GuestUser $sddcUser -GuestPassword $sddcPassword -ErrorVariable ErrMsg
-        #     if ($output.ScriptOutput.Contains("502")) {
-        #         if (($pollLoopCounter % 10 -eq 0) -AND ($pollLoopCounter -gt 9)) {
-        #             LogMessage -Type ADVISORY -Message "LCM Service Restart Still in Progress"
-        #         }
-        #         Start-Sleep 20
-        #         $pollLoopCounter ++
-        #     }
-        # }
-        # While ($output.ScriptOutput.Contains("502"))
-        # logger "LCM Service Restart Completed"
-
-        # # Set Depot credentials in SDDC Manager
-        # if ((Get-VCFDepotCredential).username -ne $depotUser) {
-        #     logger "Configuring the Bundle Depot Credentials in SDDC Manager"
-        #     Set-VCFDepotCredential -username $depotUser -password $depotPassword | Out-Null
-        # } else {
-        #     logger "Depot Credentials Already Configured"
-        # }
-
-
-
-
         
        Disconnect-VIServer * -Confirm:$false -WarningAction SilentlyContinue | Out-Null
     }

@@ -1,3 +1,17 @@
+#################################################################################################
+#                                                                                                 
+#                      Deploy the Management Workload Domain Edge Cluster                               
+#
+#                         You must have PowerVCF and PowerCLI Installed
+#
+#                         Words and Music By Alasdair Carnie & Ben Sier                         
+#                                                                                               
+#################################################################################################
+
+
+
+
+
 # This PowerShell script breaks down the component parts of an edge cluster and creates a series of system objects for each section.  It then combines them, and outputs a JSON file for use in automated deployments.
 
 # Variables for the execution log file and json file directories.
