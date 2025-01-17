@@ -1,23 +1,23 @@
 {
   "csrGenerationSpec": {
     "keySize": "2048",
-    "organization": "Holo",
-    "locality": "Champaign",
-    "state": "Illinois",
     "email": "admin@vcf.holo.org",
     "organizationUnit": "IT",
+    "locality": "Champaign",
+    "state": "Illinois",
+    "country": "us",
     "keyAlgorithm": "RSA",
-    "country": "us"
+    "organization": "Holo"
   },
   "resources": [
     {
       "fqdn": "aria-lcm.vcf.sddc.lab",
-      "type": "VRSLCM",
+      "name": "aria-lcm.vcf.sddc.lab",
       "resourceID": "542736ce-2527-40d3-9315-f27708945146",
       "sans": [
         "aria-lcm.vcf.sddc.lab"
       ],
-      "name": "aria-lcm.vcf.sddc.lab"
+      "type": "VRSLCM"
     }
   ]
 }

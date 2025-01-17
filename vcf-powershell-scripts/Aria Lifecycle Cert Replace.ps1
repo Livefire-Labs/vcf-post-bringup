@@ -167,7 +167,7 @@ logger "Creating Certificate"
 $certvrslcmSpec | ConvertTo-Json -Depth 10 | Out-File -Filepath $jsonPathDir\certVrslcmSpec.json
 
 Write-Host "Generating Aria Lifecycle Certificate on CA for $domainName"
-$certVrslcmCreateReq = Request-VCFCertificate -domainName $domainName -json .\certVrslcmSpec.json
+$certVrslcmCreateReq = Request-VCFCertificate -domainName $domainName -json $jsonPathDir\certVrslcmSpec.json
 do {$taskStatus = Get-VCFTask -id $($certVrslcmCreateReq.id) | Select status;sleep 5} until ($taskStatus -match "Successful")
 
 # Install certificate on Aria Lifecycle
