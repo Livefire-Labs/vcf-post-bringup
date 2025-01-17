@@ -48,92 +48,92 @@ $standAloneLB = "10.60.0.250"
 $ariaLCMPassword = "VMware123!"
 
 Request-VCFToken -username $ssoUser -password $ssoPass -fqdn $sddcManagerfqdn
+# <# 
+# # Get the Aria Lifecycle Bundle from the depot.  Give that it can take a cfew cycles for SDDC Manager to pull the full list of available bundles
+# # and that it does not pull the bundle list in any logical order, I created a loop to keep checking until the bundle is available, before continuing
+# $maxWaitTimeMinutes = 10
+# $retryIntervalSeconds = 60
+# $ariaLCMBundle = $null
+# $startTime = Get-Date
 
-# Get the Aria Lifecycle Bundle from the depot.  Give that it can take a cfew cycles for SDDC Manager to pull the full list of available bundles
-# and that it does not pull the bundle list in any logical order, I created a loop to keep checking until the bundle is available, before continuing
-$maxWaitTimeMinutes = 10
-$retryIntervalSeconds = 60
-$ariaLCMBundle = $null
-$startTime = Get-Date
+# # Loop to keep checking for matched bundles
+# while ($ariaLCMBundle -eq $null) {
+#     # Get the bundles that match the requirements
+#     $ariaLCMBundle = Get-VCFBundle | Where-Object {
+#         $bundle = $_
+#         $bundle.components | Where-Object { 
+#             ($_.toVersion -match "8.18") -and ($_.description -match "vRSLCM Bundle")
+#         } | ForEach-Object {
+#             $bundle
+#         }
+#     }
 
-# Loop to keep checking for matched bundles
-while ($ariaLCMBundle -eq $null) {
-    # Get the bundles that match the requirements
-    $ariaLCMBundle = Get-VCFBundle | Where-Object {
-        $bundle = $_
-        $bundle.components | Where-Object { 
-            ($_.toVersion -match "8.18") -and ($_.description -match "vRSLCM Bundle")
-        } | ForEach-Object {
-            $bundle
-        }
-    }
-
-    # Check if any matched bundles were found
-    if ($ariaLCMBundle -eq $null) {
-        Write-Host "No matched Aria bundle found. Retrying in $retryIntervalSeconds seconds..."
-        Start-Sleep -Seconds $retryIntervalSeconds
+#     # Check if any matched bundles were found
+#     if ($ariaLCMBundle -eq $null) {
+#         Write-Host "No matched Aria bundle found. Retrying in $retryIntervalSeconds seconds..."
+#         Start-Sleep -Seconds $retryIntervalSeconds
         
-        # Check if we've exceeded the maximum wait time
-        $currentTime = Get-Date
-        if (($currentTime - $startTime).TotalMinutes -ge $maxWaitTimeMinutes) {
-            Write-Host "Exceeded maximum wait time of $maxWaitTimeMinutes minutes. Check SDDC Mananger Depot connection."
-            exit 1  # Exit the script with a status code of 1
-        }
-    } else {
-        Write-Host "Matched Aria bundle found."
-    }
-}
+#         # Check if we've exceeded the maximum wait time
+#         $currentTime = Get-Date
+#         if (($currentTime - $startTime).TotalMinutes -ge $maxWaitTimeMinutes) {
+#             Write-Host "Exceeded maximum wait time of $maxWaitTimeMinutes minutes. Check SDDC Mananger Depot connection."
+#             exit 1  # Exit the script with a status code of 1
+#         }
+#     } else {
+#         Write-Host "Matched Aria bundle found."
+#     }
+# }
 
-# Proceed with the rest of the script using $ariaLCMBundle
-$ariaLCMBundle
+# # Proceed with the rest of the script using $ariaLCMBundle
+# $ariaLCMBundle
 
-Sleep 10
+# Sleep 10
 
-if ($ariaLCMBundle | Where-Object {$_.downloadstatus -eq "successful"}) {
-    Write-Host "Aria Lifecycle Bundle has already been downloaded. Skipping download..."
-    # Continue with the rest of the script
-    # Download the Aria Lifecycle Bundle, and monitor the task until completed
-    logger "Bundle already downloaded, skipping download..."
-    # Continue with the rest of the script
-} else {
-    Write-Host "Aria Lifecycle Bundle has not been downloaded yet. Downloading..."
-    # Download the Aria Lifecycle Bundle, and monitor the task until completed
-    logger "Requesting Aria Lifecycle Bundle"
-    $requestBundle = Request-VCFBundle -id $ariaLCMBundle.id
-    Sleep 5
-    do {$taskStatus = Get-VCFTask -id $($requestBundle.id)| Select status;sleep 5} until ($taskStatus -match "Successful")
-    sleep 30
-    Write-Host "Aria Suite Lifecycle Download Complete"
-    logger "Bundle Download Complete"
-}
+# if ($ariaLCMBundle | Where-Object {$_.downloadstatus -eq "successful"}) {
+#     Write-Host "Aria Lifecycle Bundle has already been downloaded. Skipping download..."
+#     # Continue with the rest of the script
+#     # Download the Aria Lifecycle Bundle, and monitor the task until completed
+#     logger "Bundle already downloaded, skipping download..."
+#     # Continue with the rest of the script
+# } else {
+#     Write-Host "Aria Lifecycle Bundle has not been downloaded yet. Downloading..."
+#     # Download the Aria Lifecycle Bundle, and monitor the task until completed
+#     logger "Requesting Aria Lifecycle Bundle"
+#     $requestBundle = Request-VCFBundle -id $ariaLCMBundle.id
+#     Sleep 5
+#     do {$taskStatus = Get-VCFTask -id $($requestBundle.id)| Select status;sleep 5} until ($taskStatus -match "Successful")
+#     sleep 30
+#     Write-Host "Aria Suite Lifecycle Download Complete"
+#     logger "Bundle Download Complete"
+# }
 
-# Create the JSON Specification for Aria Deployment
-Logger "Creating JSON Specification"
-Write-Host "Creating JSON Specification File"
-$ariaLCMDepSpec = [PSCustomObject]@{apiPassword= "VMware123!";fqdn= $ariaLCMFqdn;nsxtStandaloneTier1Ip= $standAloneLB;sshPassword= $ariaLCMPassword}
-$ariaLCMDepSpec | ConvertTo-Json -Depth 10 | Out-File -Filepath $jsonPathDir\ariaLCMDepSpec.json
-logger "JSOn Creation Complete"
+# # Create the JSON Specification for Aria Deployment
+# Logger "Creating JSON Specification"
+# Write-Host "Creating JSON Specification File"
+# $ariaLCMDepSpec = [PSCustomObject]@{apiPassword= "VMware123!";fqdn= $ariaLCMFqdn;nsxtStandaloneTier1Ip= $standAloneLB;sshPassword= $ariaLCMPassword}
+# $ariaLCMDepSpec | ConvertTo-Json -Depth 10 | Out-File -Filepath $jsonPathDir\ariaLCMDepSpec.json
+# logger "JSOn Creation Complete"
 
-# Validating the settings
-logger "Validating JSON Settings"
-Write-Host "Validating JSON Settings"
-$ariaLCMValidate = New-VCFvRSLCM -json $jsonPathDir\ariaLCMDepSpec.json -validate
+# # Validating the settings
+# logger "Validating JSON Settings"
+# Write-Host "Validating JSON Settings"
+# $ariaLCMValidate = New-VCFvRSLCM -json $jsonPathDir\ariaLCMDepSpec.json -validate
 
-Sleep 5
+# Sleep 5
 
-do {$taskStatus = Get-VCFTask -id $($ariaLCMValidate.id)| Select status;sleep 5} until ($taskStatus -match "Successful")
-Write-Host "Validation Complete"
-logger "Validation Complete"
+# do {$taskStatus = Get-VCFTask -id $($ariaLCMValidate.id)| Select status;sleep 5} until ($taskStatus -match "Successful")
+# Write-Host "Validation Complete"
+# logger "Validation Complete"
 
-# Deploy Aria Lifecycle
-logger "Deploying Aria Lifecycle"
-$ariaLCMDeploy = New-VCFvRSLCM -json $jsonPathDir\ariaLCMDepSpec.json
-Write-Host "Deploying Aria Lifecycle"
-sleep 5
-do {$taskStatus = Get-VCFTask -id $($ariaLCMDeploy.id)| Select status;sleep 5} until ($taskStatus -match "Successful")
-Write-Host "Deployment Completed Successfully"
-logger "Aria Lifecycle deployment complete"
-
+# # Deploy Aria Lifecycle
+# logger "Deploying Aria Lifecycle"
+# $ariaLCMDeploy = New-VCFvRSLCM -json $jsonPathDir\ariaLCMDepSpec.json
+# Write-Host "Deploying Aria Lifecycle"
+# sleep 5
+# do {$taskStatus = Get-VCFTask -id $($ariaLCMDeploy.id)| Select status;sleep 5} until ($taskStatus -match "Successful")
+# Write-Host "Deployment Completed Successfully"
+# logger "Aria Lifecycle deployment complete"
+ #>
 # ==================== Create and deploy Certificate for Aria Lifecycle ====================
 logger "Creating certificate request for Aria Lifecycle"
 $domainName = Get-VCFWorkloadDomain | Where-Object {$_.type -match "MANAGEMENT"} |Select -ExpandProperty name
