@@ -178,6 +178,6 @@ $certVrslcmInstallSpec = [PSCustomObject]@{
 }
 
 $certVrslcmInstallSpec | ConvertTo-Json -Depth 10 | Out-File -Filepath $jsonPathDir\certVrslcmInstallSpec.json
-Write-Host "Installing Certificates for $domainName"
+Write-Host "Installing Certificates for Aria Lifecycle"
 $certVrslcmInstallReq = Set-VCFCertificate -domainName $domainName -json $jsonPathDir\certVrslcmInstallSpec.json
 do {$taskStatus = Get-VCFTask -id $($certVrslcmInstallReq.id) | Select status;sleep 5} until ($taskStatus -match "Successful")

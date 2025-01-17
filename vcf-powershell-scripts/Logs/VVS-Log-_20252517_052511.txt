@@ -1,0 +1,6 @@
+05:25:11 :> Downloading and Deploying Aria Lifecycle
+05:25:11 :> Setting Variables for SDDC Manager
+05:25:11 :> Creating certificate request for Aria Lifecycle
+05:25:11 :> Requesting Aria Lifecycle Certificate
+05:25:22 :> Creating Certificate
+05:25:33 :> Installing Aria Lifecycle Certificate
