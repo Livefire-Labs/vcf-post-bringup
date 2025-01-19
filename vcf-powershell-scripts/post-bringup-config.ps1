@@ -161,7 +161,7 @@ if (Test-VCFConnection -server $sddcManagerfqdn) {
             logger "Create Backup Configuration JSON Specification"
             $backUpConfigurationSpec = [PSCustomObject]@{
                 backupLocations = @(@{server = $backupServer; username = $backupUser; password = $backupPassword; port = $backupPort; protocol = $backupProtocol; directoryPath = $backupPath; sshFingerprint = $backupKey })
-                backupSchedules = @(@{frequency = 'WEEKLY'; resourceType = 'SDDC_MANAGER'; minuteOfHour = '0' })
+                backupSchedules = @(@{frequency = 'DAILY'; resourceType = 'SDDC_MANAGER'; minuteOfHour = '0' })
                 encryption      = @{passphrase = $backupPassphrase }
             }
             logger "Creating Backup Configuration JSON file"
